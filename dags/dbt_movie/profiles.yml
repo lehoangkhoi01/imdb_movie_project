@@ -1,0 +1,16 @@
+dbt_movie: # this needs to match the profile in your dbt_project.yml file
+    target: dev
+    outputs:
+        dev:
+            type: duckdb
+            extensions:
+              - httpfs
+              - parquet
+            path: ./dbt_movie.duckdb
+            settings:
+              s3_region: us-east-1
+              s3_access_key_id: "admin"
+              s3_secret_access_key: "password"
+              s3_endpoint: "localhost:9000"
+              s3_use_ssl: false
+              s3_url_style: path

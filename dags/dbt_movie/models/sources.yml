@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: imdb_raw
+    database: dbt_movie
+    schema: main_raw
+    tables:
+      - name: raw_actors
+        identifier: raw_imdb_data__actors
+      - name: raw_movies
+        identifier: raw_imdb_data__movies
+      - name: raw_ratings
+        identifier: raw_imdb_data__ratings
+  - name: imdb_staging
+    database: dbt_movie
+    schema: main_staging
+    tables:
+      - name: stg_actors
+        identifier: stg_imdb_data__actors
+      - name: stg_movies
+        identifier: stg_imdb_data__movies
+      - name: stg_ratings
+        identifier: stg_imdb_data__ratings
+  - name: imdb_intermediate
+    database: dbt_movie
+    schema: main_intermediate
+    tables:
+      - name: int_actor_movie_flattened
+        identifier: int_actor_movie_flatten
+  - name: imdb_marts
+    database: dbt_movie
+    schema: main_marts
+    tables:
+      - name: dim_actors
+        identifier: dim_actors
+      - name: dim_movies
+        identifier: dim_movies
+      - name: fact_ratings
+        identifier: fact_ratings
