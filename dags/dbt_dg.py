@@ -3,7 +3,7 @@ from airflow import DAG
 from custom_operator.dbt_operator import DbtCoreOperator
 from airflow import settings
 
-DBT_PROJECT_PATH = f"{settings.DAGS_FOLDER}/dbt_trino"
+DBT_PROJECT_PATH = f"{settings.DAGS_FOLDER}/dbt_movie"
 
 default_args = {
     'owner': 'khoilh',
@@ -23,20 +23,36 @@ with DAG(
         catchup=False,
         tags=['dbt', 'data_transformation'],
 ) as dag:
-    dbt_seed_task = DbtCoreOperator(
-        task_id='dbt_seed',
-        dbt_project_dir=DBT_PROJECT_PATH,
-        dbt_profiles_dir=DBT_PROJECT_PATH,
-        dbt_command='seed',
-        full_refresh=True
+
+    # dbt_debug = DbtCoreOperator(
+    #     task_id='dbt_debug',
+    #     dbt_project_dir=DBT_PROJECT_PATH,
+    #     dbt_profiles_dir=DBT_PROJECT_PATH,
+    #     dbt_command='debug'
+    # )
+
+    dbt_run_marts = DbtCoreOperator(
+        task_id='dbt_run_marts',
+        dbt_project_dir = DBT_PROJECT_PATH,
+        dbt_profiles_dir = DBT_PROJECT_PATH,
+        dbt_command='run',
+        select='marts'
     )
 
-    dbt_run_task = DbtCoreOperator(
-        task_id='dbt_run',
+    dbt_run_inter = DbtCoreOperator(
+        task_id='dbt_run_inter',
+        dbt_project_dir = DBT_PROJECT_PATH,
+        dbt_profiles_dir = DBT_PROJECT_PATH,
+        dbt_command='run',
+        select='intermediate'
+    )
+
+    dbt_run_staging = DbtCoreOperator(
+        task_id='dbt_run_staging',
         dbt_project_dir=DBT_PROJECT_PATH,
         dbt_profiles_dir=DBT_PROJECT_PATH,
         dbt_command='run',
+        select='staging'
     )
 
-    # Define the task dependencies
-    dbt_seed_task >> dbt_run_task
+    dbt_run_staging >> dbt_run_inter >> dbt_run_marts
